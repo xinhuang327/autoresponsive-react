@@ -23,23 +23,23 @@ var ExecutionEnvironment = require('exenv');
 var Util = Common.Util;
 
 function transitionEnd() {
-  var transitionEndEventNames = {
-    WebkitTransition: 'webkitTransitionEnd',
-    MozTransition: 'transitionend',
-    OTransition: 'oTransitionEnd otransitionend',
-    transition: 'transitionend'
-  };
-  if (!ExecutionEnvironment.canUseDOM) {
-    return transitionEndEventNames;
-  }
-  var el = document.createElement('pin');
+	var transitionEndEventNames = {
+		WebkitTransition: 'webkitTransitionEnd',
+		MozTransition: 'transitionend',
+		OTransition: 'oTransitionEnd otransitionend',
+		transition: 'transitionend'
+	};
+	if (!ExecutionEnvironment.canUseDOM) {
+		return transitionEndEventNames;
+	}
+	var el = document.createElement('pin');
 
-  for (var _name in transitionEndEventNames) {
-    if (el.style[_name] !== undefined) {
-      return transitionEndEventNames[_name];
-    }
-  }
-  return false;
+	for (var _name in transitionEndEventNames) {
+		if (el.style[_name] !== undefined) {
+			return transitionEndEventNames[_name];
+		}
+	}
+	return false;
 }
 
 var ifHasTransitionEnd = transitionEnd();
@@ -47,72 +47,74 @@ var ifHasTransitionEnd = transitionEnd();
 var prefixes = ['Webkit', 'Moz', 'ms', 'O', ''];
 
 var AnimationManager = (function () {
-  function AnimationManager() {
-    _classCallCheck(this, AnimationManager);
+	function AnimationManager() {
+		_classCallCheck(this, AnimationManager);
 
-    this.animationHandle = 'css' + (ifHasTransitionEnd ? 3 : 2) + 'Animation';
-  }
+		this.animationHandle = 'css' + (ifHasTransitionEnd ? 3 : 2) + 'Animation';
+	}
 
-  _createClass(AnimationManager, [{
-    key: 'generate',
-    value: function generate(options) {
-      Util.merge(this, options);
-      return this[this.animationHandle]();
-    }
-  }, {
-    key: 'css2Animation',
-    value: function css2Animation() {
-      var style = {};
-      style[this.horizontalDirection] = this.position[0] + 'px';
-      style[this.verticalDirection] = this.position[1] + 'px';
+	_createClass(AnimationManager, [{
+		key: 'generate',
+		value: function generate(options) {
+			Util.merge(this, options);
+			return this[this.animationHandle]();
+		}
+	}, {
+		key: 'css2Animation',
+		value: function css2Animation() {
+			var style = {};
+			style[this.horizontalDirection] = this.position[0] + 'px';
+			style[this.verticalDirection] = this.position[1] + 'px';
 
-      this.mixAnimation(style);
-      return style;
-    }
-  }, {
-    key: 'css3Animation',
-    value: function css3Animation() {
-      var _this = this;
+			this.mixAnimation(style);
+			return style;
+		}
+	}, {
+		key: 'css3Animation',
+		value: function css3Animation() {
+			var _this = this;
 
-      var style = {};
+			var style = {};
 
-      prefixes.map(function (prefix) {
-        var x = undefined,
-            y = undefined;
+			prefixes.map(function (prefix) {
+				var x = undefined,
+				    y = undefined;
 
-        if (_this.horizontalDirection === 'right') {
-          x = _this.containerWidth - _this.size.width - _this.position[0];
-        } else {
-          x = _this.position[0];
-        }
+				if (_this.horizontalDirection === 'right') {
+					x = _this.containerWidth - _this.size.width - _this.position[0];
+				} else {
+					x = _this.position[0];
+				}
 
-        if (_this.verticalDirection === 'bottom') {
-          y = _this.containerHeight - _this.size.height - _this.position[1];
-        } else {
-          y = _this.position[1];
-        }
+				if (_this.verticalDirection === 'bottom') {
+					y = _this.containerHeight - _this.size.height - _this.position[1];
+				} else {
+					y = _this.position[1];
+				}
 
-        style[prefix + 'Transform'] = 'translate3d(' + x + 'px, ' + y + 'px, 0)';
-      });
+				//   style[`${prefix}Transform`] = `translate3d(${x}px, ${y}px, 0)`;
+				style['left'] = x;
+				style['top'] = y;
+			});
 
-      this.mixAnimation(style);
-      return style;
-    }
-  }, {
-    key: 'mixAnimation',
-    value: function mixAnimation(style) {
-      var _this2 = this;
+			this.mixAnimation(style);
+			return style;
+		}
+	}, {
+		key: 'mixAnimation',
+		value: function mixAnimation(style) {
+			var _this2 = this;
 
-      if (!this.closeAnimation) {
-        prefixes.map(function (prefix) {
-          style[prefix + 'TransitionDuration'] = _this2.transitionDuration + 's';
-          style[prefix + 'TransitionTimingFunction'] = _this2.transitionTimingFunction;
-        });
-      }
-    }
-  }]);
+			if (!this.closeAnimation) {
+				prefixes.map(function (prefix) {
+					style[prefix + 'TransitionDuration'] = _this2.transitionDuration + 's';
+					style[prefix + 'TransitionTimingFunction'] = _this2.transitionTimingFunction;
+				});
+			}
+		}
+	}]);
 
-  return AnimationManager;
+	return AnimationManager;
 })();
 
 module.exports = AnimationManager;
